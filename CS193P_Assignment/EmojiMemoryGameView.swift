@@ -11,25 +11,25 @@ struct EmojiMemoryGameView: View {
     
     @ObservedObject var viewModel: EmojiMemoryGame = EmojiMemoryGame()//ViewModel points to View
     
-//    @State var emojis: Array<String> =  []
-//    let animals = ["🙈","🐥","🐶","🐱","🐻","🐧"]
-//    let food = ["🍎","🍋","🥐","🍳","🍔","🌮","🍍","🥘"]
-//    let vehicles = ["🚝","🚀","⛵️","🚁","🛴"]
-    
-//    @State var themeColor: Color = .green
-//
-//    @State var cardCount: Int = 4
-//    @State var currentTheme: String = "Animals"
-    
     
     var body: some View {
         VStack{
-            title
+            HStack{
+                title
+                Spacer()
+                score
+            }
             ScrollView{
                 cards
                     .animation(.default, value: viewModel.cards)
             }
-            Button("NewGame"){}
+            Button("NewGame"){
+                viewModel.newGame()
+            }
+            Spacer()
+            themeSelection
+            Spacer()
+
             
             
             
@@ -39,9 +39,9 @@ struct EmojiMemoryGameView: View {
 //                viewModel.shuffle()
 //            }
             
-            // Spacer()
-            // themeSelection
             // cardCountAdjuster
+            
+
         }
         .padding()
     }
@@ -49,6 +49,10 @@ struct EmojiMemoryGameView: View {
     var title: some View{
         Text("Memorize!")
             .font(.largeTitle)
+    }
+    
+    var score: some View{
+        Text("Score: "+String(viewModel.score))
     }
     
     
@@ -64,80 +68,69 @@ struct EmojiMemoryGameView: View {
                     }
             }
         }
-//        .foregroundColor(themeColor)
+        //.foregroundColor(Color("."+EmojiMemoryGame.currentTheme.color))
+        .foregroundColor(EmojiMemoryGame.currentColor)
     }
     
     
     
-//    var themeSelection: some View{
-//        HStack{
-//            Spacer()
-//            animalTheme
-//            Spacer()
-//            foodTheme
-//            Spacer()
-//            vehicleTheme
-//            Spacer()
-//        }
-//    }
-    
-//    func themeButtonCreation(caption: String, symbol: String, themeEmojis: [String], color: Color) -> some View{
-//
-//        Button(action: {
-//            emojis = themeEmojis + themeEmojis
-//                .shuffled()
-//            themeColor = color
-//        }, label: {
-//            VStack{
-//                Image(systemName: symbol).font(.largeTitle)
-//                Text(caption)
-//            }
-//        })
-//    }
-//
-//    var animalTheme: some View{
-//        themeButtonCreation(caption: "Animals", symbol: "pawprint.fill", themeEmojis: animals, color: .green)
-//    }
-//    var foodTheme: some View{
-//        themeButtonCreation(caption: "Food", symbol: "fork.knife.circle", themeEmojis: food, color: .red)
-//    }
-//    var vehicleTheme: some View{
-//        themeButtonCreation(caption: "Vehicles", symbol: "car.fill", themeEmojis: vehicles, color: .black)
-//    }
-    
-    
-    // THE FOLLOWING IS FROM LECTURE. NOT NEEDED FOR ASSIGNMENT
-//    var cardCountAdjuster: some View{
-//        HStack{
-//            cardRemover
-//            Spacer()
-//            cardAdder
-//        }
-//        .imageScale(.large)
-//        .font(.largeTitle)
-//    }
+    var themeSelection: some View{
+        VStack{
+            HStack{
+                Spacer()
+                animalTheme
+                Spacer()
+                foodTheme
+                Spacer()
+                vehicleTheme
+                Spacer()
+            }
+            HStack{
+                Spacer()
+                sportTheme
+                Spacer()
+                countryTheme
+                Spacer()
+                heartTheme
+                Spacer()
+            }
+            
+        }
         
-//
-//    func cardCountAdjuster(by offset: Int, symbol: String) -> some View{
-//        Button(action: {
-//            cardCount += offset
-//        }, label: {
-//            Image(systemName: symbol)
-//        })
-//        .disabled(cardCount + offset < 1 || cardCount + offset > emojis.count)
-//    }
-//
+    }
+    
+    func themeButtonCreation(caption: String, symbol: String) -> some View{
+
+        Button(action: {
+            viewModel.changeTheme(to: caption)
+        }, label: {
+            VStack{
+                Image(systemName: symbol).font(.largeTitle)
+                Text(caption)
+            }
+        })
+    }
+
+    var animalTheme: some View{
+        themeButtonCreation(caption: "Animals", symbol: "pawprint.fill")
+    }
+    var foodTheme: some View{
+        themeButtonCreation(caption: "Food", symbol: "fork.knife.circle")
+    }
+    var vehicleTheme: some View{
+        themeButtonCreation(caption: "Vehicles", symbol: "car.fill")
+    }
+    var sportTheme: some View{
+        themeButtonCreation(caption: "Sports", symbol: "figure.run")
+    }
+    var countryTheme: some View{
+        themeButtonCreation(caption: "Countries", symbol: "location.circle.fill")
+    }
+    var heartTheme: some View{
+        themeButtonCreation(caption: "Hearts", symbol: "heart.circle.fill")
+    }
     
     
-//    var cardRemover: some View{
-//        cardCountAdjuster(by: -1, symbol:"rectangle.stack.badge.minus.fill")
-//    }
-//
-//    var cardAdder: some View{
-//        cardCountAdjuster(by: 1, symbol:"rectangle.stack.badge.plus.fill")
-//    }
-//
-    // THE ABOVE IS FROM LECTURE. NOT NEEDED FOR ASSIGNMENT
     
     
 }

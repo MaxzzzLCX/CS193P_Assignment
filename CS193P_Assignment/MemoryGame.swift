@@ -9,18 +9,17 @@ import Foundation
 
 struct MemoryGame<CardContent> where CardContent: Equatable{
     private(set) var cards: Array<Card>
+    var score: Int
     
     init(numberOfPairsOfCards: Int, cardContentFactory: (Int) -> CardContent){
         cards = Array<Card>()
         // can directly do cards=[], because from above we know cards is of type Card
         
-        for pairIndex in 0..<max(2, numberOfPairsOfCards){
-            let content = cardContentFactory(pairIndex)
-            cards.append(Card(content: content, id: "\(pairIndex+1)a"))
-            cards.append(Card(content: content, id: "\(pairIndex+1)b"))
+        for index in 0..<max(2, 2*numberOfPairsOfCards){
+            let content = cardContentFactory(index)
+            cards.append(Card(content: content, id: "\(index+1)"))
         }
-        
-        
+        score = 0
     }
     
     
@@ -36,14 +35,26 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
             
             if !cards[chosenIndex].isFaceUp && !cards[chosenIndex].isMatched{
                 
-                if let potentialMatchIndex = indexOfTheOneAndOnlyFaceUpCard{
-                    if cards[chosenIndex].content == cards[potentialMatchIndex].content{
+                if let previousChoosen = indexOfTheOneAndOnlyFaceUpCard{
+                    if cards[chosenIndex].content == cards[previousChoosen].content{
                         cards[chosenIndex].isMatched = true
-                        cards[potentialMatchIndex].isMatched = true
+                        cards[previousChoosen].isMatched = true
+                        score += 2
+                    }
+                    else{
+                        if cards[chosenIndex].hasSeen{
+                            score -= 1
+                        }
+                        if cards[previousChoosen].hasSeen{
+                            score -= 1
+                        }
+                        cards[chosenIndex].hasSeen = true
+                        cards[previousChoosen].hasSeen = true
                     }
                 }else{
                     indexOfTheOneAndOnlyFaceUpCard = chosenIndex
                 }
+                
                 cards[chosenIndex].isFaceUp = true
             }
             
@@ -52,8 +63,11 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
         }
     }
     
-    mutating func newGame(_ card: Card){
-        
+    mutating func newGame(){
+        for index in cards.indices{
+            cards[index].isFaceUp = false
+            cards[index].isMatched = false
+        }
     }
     
     mutating func shuffle(){
@@ -66,6 +80,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
         
         var isFaceUp = false
         var isMatched = false
+        var hasSeen = false
         let content: CardContent
         
         var id: String
@@ -75,6 +90,15 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
         }
     }
 }
+
+struct Theme: Equatable{
+    var name: String
+    var emojis: Array<String>
+    var numberOfPairs: Int
+    var color: String
+}
+
+
 
 extension Array {
     var only: Element?{
